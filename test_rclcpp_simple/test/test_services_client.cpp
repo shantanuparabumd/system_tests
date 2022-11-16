@@ -20,7 +20,7 @@
 #include "rclcpp/exceptions.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "test_rclcpp/srv/add_two_ints.hpp"
+#include "test_rclcpp_simple/srv/add_two_ints.hpp"
 
 #ifdef RMW_IMPLEMENTATION
 # define CLASSNAME_(NAME, SUFFIX) NAME ## __ ## SUFFIX
@@ -48,8 +48,8 @@ public:
 TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_noreqid) {
   auto node = rclcpp::Node::make_shared("test_services_client_no_reqid");
 
-  auto client = node->create_client<test_rclcpp::srv::AddTwoInts>("add_two_ints_noreqid");
-  auto request = std::make_shared<test_rclcpp::srv::AddTwoInts::Request>();
+  auto client = node->create_client<test_rclcpp_simple::srv::AddTwoInts>("add_two_ints_noreqid");
+  auto request = std::make_shared<test_rclcpp_simple::srv::AddTwoInts::Request>();
   request->a = 1;
   request->b = 2;
 
@@ -68,8 +68,8 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_noreqid) {
 TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_reqid) {
   auto node = rclcpp::Node::make_shared("test_services_client_add_reqid");
 
-  auto client = node->create_client<test_rclcpp::srv::AddTwoInts>("add_two_ints_reqid");
-  auto request = std::make_shared<test_rclcpp::srv::AddTwoInts::Request>();
+  auto client = node->create_client<test_rclcpp_simple::srv::AddTwoInts>("add_two_ints_reqid");
+  auto request = std::make_shared<test_rclcpp_simple::srv::AddTwoInts::Request>();
   request->a = 4;
   request->b = 5;
 
@@ -88,9 +88,9 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_reqid) {
 TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_return_request) {
   auto node = rclcpp::Node::make_shared("test_services_client_return_request");
 
-  auto client = node->create_client<test_rclcpp::srv::AddTwoInts>(
+  auto client = node->create_client<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_reqid_return_request");
-  auto request = std::make_shared<test_rclcpp::srv::AddTwoInts::Request>();
+  auto request = std::make_shared<test_rclcpp_simple::srv::AddTwoInts::Request>();
   request->a = 4;
   request->b = 5;
 
@@ -100,7 +100,7 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_return_request)
 
   auto result = client->async_send_request(
     request,
-    [](rclcpp::Client<test_rclcpp::srv::AddTwoInts>::SharedFutureWithRequest future) {
+    [](rclcpp::Client<test_rclcpp_simple::srv::AddTwoInts>::SharedFutureWithRequest future) {
       EXPECT_EQ(4, future.get().first->a);
       EXPECT_EQ(5, future.get().first->b);
       EXPECT_EQ(9, future.get().second->sum);
@@ -113,9 +113,9 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_return_request)
 TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_two_ints_defered_cb) {
   auto node = rclcpp::Node::make_shared("test_services_client_add_two_ints_defered_cb");
 
-  auto client = node->create_client<test_rclcpp::srv::AddTwoInts>(
+  auto client = node->create_client<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_defered_cb");
-  auto request = std::make_shared<test_rclcpp::srv::AddTwoInts::Request>();
+  auto request = std::make_shared<test_rclcpp_simple::srv::AddTwoInts::Request>();
   request->a = 4;
   request->b = 5;
 
@@ -125,7 +125,7 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_two_ints_de
 
   auto result = client->async_send_request(
     request,
-    [](rclcpp::Client<test_rclcpp::srv::AddTwoInts>::SharedFutureWithRequest future) {
+    [](rclcpp::Client<test_rclcpp_simple::srv::AddTwoInts>::SharedFutureWithRequest future) {
       EXPECT_EQ(4, future.get().first->a);
       EXPECT_EQ(5, future.get().first->b);
       EXPECT_EQ(9, future.get().second->sum);
@@ -138,9 +138,9 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_two_ints_de
 TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_two_ints_defcb_with_handle) {
   auto node = rclcpp::Node::make_shared("test_services_client_add_two_ints_defered_cb_with_handle");
 
-  auto client = node->create_client<test_rclcpp::srv::AddTwoInts>(
+  auto client = node->create_client<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_defered_cb_with_handle");
-  auto request = std::make_shared<test_rclcpp::srv::AddTwoInts::Request>();
+  auto request = std::make_shared<test_rclcpp_simple::srv::AddTwoInts::Request>();
   request->a = 4;
   request->b = 5;
 
@@ -150,7 +150,7 @@ TEST_F(CLASSNAME(test_services_client, RMW_IMPLEMENTATION), test_add_two_ints_de
 
   auto result = client->async_send_request(
     request,
-    [](rclcpp::Client<test_rclcpp::srv::AddTwoInts>::SharedFutureWithRequest future) {
+    [](rclcpp::Client<test_rclcpp_simple::srv::AddTwoInts>::SharedFutureWithRequest future) {
       EXPECT_EQ(4, future.get().first->a);
       EXPECT_EQ(5, future.get().first->b);
       EXPECT_EQ(9, future.get().second->sum);

@@ -17,19 +17,19 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "test_rclcpp/srv/add_two_ints.hpp"
+#include "test_rclcpp_simple/srv/add_two_ints.hpp"
 
 void handle_add_two_ints_noreqid(
-  const std::shared_ptr<test_rclcpp::srv::AddTwoInts::Request> request,
-  std::shared_ptr<test_rclcpp::srv::AddTwoInts::Response> response)
+  const std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Request> request,
+  std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Response> response)
 {
   response->sum = request->a + request->b;
 }
 
 void handle_add_two_ints_reqid(
   const std::shared_ptr<rmw_request_id_t> request_header,
-  const std::shared_ptr<test_rclcpp::srv::AddTwoInts::Request> request,
-  std::shared_ptr<test_rclcpp::srv::AddTwoInts::Response> response)
+  const std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Request> request,
+  std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Response> response)
 {
   (void)request_header;
   response->sum = request->a + request->b;
@@ -43,11 +43,11 @@ public:
   // we need two steps initialization because of shared_from_this()
   void create_service(rclcpp::Node & node)
   {
-    impl_ = node.create_service<test_rclcpp::srv::AddTwoInts>(
+    impl_ = node.create_service<test_rclcpp_simple::srv::AddTwoInts>(
       "add_two_ints_defered_cb",
       [this](
         const std::shared_ptr<rmw_request_id_t> request_header,
-        const std::shared_ptr<test_rclcpp::srv::AddTwoInts::Request> request)
+        const std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Request> request)
       {
         if (handle_defered_response_thread_.joinable()) {
           throw std::runtime_error{"expected the callback to be called only once"};
@@ -59,7 +59,7 @@ public:
             request = std::move(request),
             request_header = std::move(request_header)]()
           {
-            test_rclcpp::srv::AddTwoInts::Response response;
+            test_rclcpp_simple::srv::AddTwoInts::Response response;
             response.sum = request->a + request->b;
             me->impl_->send_response(*request_header, response);
           });
@@ -74,7 +74,7 @@ public:
   }
 
 private:
-  std::shared_ptr<rclcpp::Service<test_rclcpp::srv::AddTwoInts>> impl_;
+  std::shared_ptr<rclcpp::Service<test_rclcpp_simple::srv::AddTwoInts>> impl_;
   std::thread handle_defered_response_thread_;
 };
 
@@ -84,25 +84,25 @@ int main(int argc, char ** argv)
 
   auto node = rclcpp::Node::make_shared("add_two_ints_server");
 
-  auto service_noreqid = node->create_service<test_rclcpp::srv::AddTwoInts>(
+  auto service_noreqid = node->create_service<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_noreqid", handle_add_two_ints_noreqid);
 
-  auto service_reqid = node->create_service<test_rclcpp::srv::AddTwoInts>(
+  auto service_reqid = node->create_service<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_reqid", handle_add_two_ints_reqid);
 
-  auto service_return_req = node->create_service<test_rclcpp::srv::AddTwoInts>(
+  auto service_return_req = node->create_service<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_reqid_return_request", handle_add_two_ints_reqid);
 
   auto defered_cb = std::make_shared<DeferedCbServiceWrapper>();
   defered_cb->create_service(*node);
 
   rclcpp::TimerBase::SharedPtr timer;
-  auto derefed_cb_with_handle = node->create_service<test_rclcpp::srv::AddTwoInts>(
+  auto derefed_cb_with_handle = node->create_service<test_rclcpp_simple::srv::AddTwoInts>(
     "add_two_ints_defered_cb_with_handle",
     [node, &timer](
-      const std::shared_ptr<rclcpp::Service<test_rclcpp::srv::AddTwoInts>> handle,
+      const std::shared_ptr<rclcpp::Service<test_rclcpp_simple::srv::AddTwoInts>> handle,
       const std::shared_ptr<rmw_request_id_t> request_header,
-      const std::shared_ptr<test_rclcpp::srv::AddTwoInts::Request> request)
+      const std::shared_ptr<test_rclcpp_simple::srv::AddTwoInts::Request> request)
     {
       // We defer handling the response in another callback, for example a timer.
       timer = node->create_wall_timer(
@@ -113,7 +113,7 @@ int main(int argc, char ** argv)
           request = std::move(request)
         ]()
         {
-          test_rclcpp::srv::AddTwoInts::Response response;
+          test_rclcpp_simple::srv::AddTwoInts::Response response;
           response.sum = request->a + request->b;
           handle->send_response(*header, response);
         });
